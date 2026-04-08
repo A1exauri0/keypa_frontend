@@ -71,3 +71,25 @@ npm run db:seed
 ```
 
 Luego iniciar backend y frontend en paralelo.
+
+## Docker
+
+La orquestacion Docker de frontend + backend + mysql ahora esta en `keypa_outlet/docker-compose.yml`.
+
+Comandos:
+
+```bash
+cd c:\laragon\www\keypa_outlet
+docker compose up --build
+```
+
+Accesos esperados:
+
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:3000`
+
+Para detener:
+
+```bash
+docker compose down
+```
