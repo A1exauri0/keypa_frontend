@@ -36,6 +36,8 @@ Aplicacion cliente para autenticacion y experiencia principal de usuarios de Key
 
 - Los identificadores de entidades se exponen con nombres semanticos (ejemplo: idUsuario, idProducto).
 - Mantener consistencia de naming al mapear respuestas del API en componentes y stores.
+- Tablas padre del backend en plural (usuarios, productos, roles, permisos).
+- Permisos efectivos del usuario: permisos por rol + permisos directos adicionales.
 
 ## Docker
 
