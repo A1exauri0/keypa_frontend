@@ -1,16 +1,73 @@
-# React + Vite
+# Keypa Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicacion cliente para autenticacion y panel inicial de usuarios, construida con React + Vite + Tailwind CSS.
 
-Currently, two official plugins are available:
+## Contexto del repositorio
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Stack: React 19, React Router, Axios, Context API, Tailwind CSS.
+- Objetivo actual: login, sesion persistente por token y vista de inicio protegida.
+- Integracion API: usa `VITE_API_URL` para comunicarse con `keypa_backend`.
 
-## React Compiler
+## Requisitos
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Node.js 20+
+- Backend ejecutandose (por defecto en `http://localhost:3000`)
 
-## Expanding the ESLint configuration
+## Instalacion
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. Instalar dependencias:
+
+```bash
+npm install
+```
+
+2. Crear archivo de entorno:
+
+```bash
+Copy-Item .env.example .env
+```
+
+3. Configurar `VITE_API_URL` en `.env`.
+
+## Comandos principales
+
+- Desarrollo:
+
+```bash
+npm run dev
+```
+
+- Build:
+
+```bash
+npm run build
+```
+
+- Vista previa de build:
+
+```bash
+npm run preview
+```
+
+- Lint:
+
+```bash
+npm run lint
+```
+
+## Tailwind CSS
+
+- Configuracion: `tailwind.config.js` y `postcss.config.js`
+- Entrada global: `src/index.css`
+- Uso: clases utilitarias directamente en componentes JSX
+
+## Flujo recomendado con backend
+
+En `keypa_backend` ejecutar migraciones y seeders:
+
+```bash
+npm run prisma:migrate -- --name init
+npm run db:seed
+```
+
+Luego iniciar backend y frontend en paralelo.
