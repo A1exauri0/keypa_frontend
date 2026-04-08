@@ -1,8 +1,8 @@
 # CONTEXT - Keypa Frontend
 
-## Proposito
+## Vista rapida
 
-Aplicacion cliente para autenticacion y experiencia principal de usuarios de Keypa.
+Cliente web para autenticacion, panel y gestion de catalogos/seguridad.
 
 ## Stack
 
@@ -11,39 +11,53 @@ Aplicacion cliente para autenticacion y experiencia principal de usuarios de Key
 - Axios
 - Tailwind CSS
 
-## Estructura principal
+## Mapa visual del proyecto
 
-- Organizacion general del sistema (carpeta padre):
-	- keypa_outlet/
-	- keypa_outlet/keypa_backend/
-	- keypa_outlet/keypa_frontend/
-- Modulos y paginas: src/modules/
-- Estado de autenticacion: src/context/
-- Servicios HTTP: src/modules/**/services/
+```text
+keypa_outlet/
+└── keypa_frontend/
+		├── src/
+		│   ├── modules/
+		│   ├── context/
+		│   ├── router/
+		│   └── services/
+		├── public/
+		├── index.html
+		└── vite.config.js
+```
 
 ## Integracion con backend
 
-- URL base por variable VITE_API_URL.
+- Base URL por variable VITE_API_URL.
 - Login por correo y contrasena.
-- Manejo de token para sesion persistente.
+- Token JWT para sesion persistente.
 
-## Convencion de idioma del proyecto
+## Contrato de backend relevante
 
-- Componentes, vistas, helpers y comentarios deben escribirse en espanol.
-- Mantener textos funcionales y mensajes internos en espanol.
+- IDs semanticos por entidad:
+	- idUsuario
+	- idProducto
+	- idRol
+	- idPermiso
+- Endpoints de backend organizados por archivos router:
+	- auth.router.js
+	- usuarios.router.js
+	- roles.router.js
+	- permisos.router.js
+- Permisos efectivos del usuario:
+	- por rol
+	- mas permisos directos
 
-## Convenciones de backend relevantes para frontend
+## Convencion de idioma
 
-- Los identificadores de entidades se exponen con nombres semanticos (ejemplo: idUsuario, idProducto).
-- Mantener consistencia de naming al mapear respuestas del API en componentes y stores.
-- Tablas padre del backend en plural (usuarios, productos, roles, permisos).
-- Permisos efectivos del usuario: permisos por rol + permisos directos adicionales.
+- Componentes, vistas, helpers y comentarios en espanol.
+- Mensajes de interfaz y errores en espanol.
 
 ## Docker
 
-El stack se levanta desde la carpeta padre keypa_outlet con docker-compose.yml.
+El stack se levanta desde keypa_outlet.
 
-Comandos utiles desde keypa_outlet:
+Comandos utiles:
 - npm run upd
 - npm run logs
 - npm run down
