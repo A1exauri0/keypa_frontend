@@ -7,7 +7,7 @@ export default function ProtectedRoute({ children }) {
   if (cargando) {
     return (
       <main className="grid min-h-screen place-items-center bg-slate-100 px-4">
-        <p className="rounded-lg bg-white px-4 py-3 text-slate-700 shadow">Cargando sesion...</p>
+        <p className="rounded-lg bg-white px-4 py-3 text-slate-700 shadow">Cargando sesión...</p>
       </main>
     );
   }

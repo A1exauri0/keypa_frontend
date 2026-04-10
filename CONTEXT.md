@@ -30,7 +30,7 @@ keypa_outlet/
 
 - Base URL por variable VITE_API_URL.
 - Login por correo y contrasena.
-- Token JWT para sesion persistente.
+- Token JWT para sesión persistente.
 
 ## Contrato de backend relevante
 

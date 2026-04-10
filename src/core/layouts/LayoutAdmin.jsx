@@ -53,7 +53,7 @@ export default function LayoutAdmin() {
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-fuchsia-50 to-violet-100 text-slate-900">
       <LoadingOverlay
         show={cerrandoSesion || navegandoVista}
-        message={cerrandoSesion ? 'Cerrando sesion...' : 'Cargando vista...'}
+        message={cerrandoSesion ? 'Cerrando sesión...' : 'Cargando vista...'}
         logoSrc={appLogo}
         logoAlt="Keypa"
       />

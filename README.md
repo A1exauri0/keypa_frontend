@@ -5,7 +5,7 @@ Aplicacion cliente para autenticacion y panel inicial de usuarios, construida co
 ## Contexto del repositorio
 
 - Stack: React 19, React Router, Axios, Context API, Tailwind CSS.
-- Objetivo actual: login, sesion persistente por token y vista de inicio protegida.
+- Objetivo actual: login, sesión persistente por token y vista de inicio protegida.
 - Integracion API: usa `VITE_API_URL` para comunicarse con `keypa_backend`.
 
 ## Requisitos
