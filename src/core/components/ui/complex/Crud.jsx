@@ -5,6 +5,7 @@ import InputText from '../inputs/InputText';
 import Select from '../selectors/Select';
 import Checkbox from '../inputs/Checkbox';
 import LoadingOverlay from '../feedback/LoadingOverlay';
+import ConfirmDialog from '../overlays/ConfirmDialog';
 
 export default function Crud({
   title,
@@ -33,6 +34,13 @@ export default function Crud({
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [loadingActualizar, setLoadingActualizar] = useState(false);
+  const [confirmState, setConfirmState] = useState({
+    open: false,
+    mode: null,
+    row: null,
+    rowId: null,
+  });
+  const [confirmLoading, setConfirmLoading] = useState(false);
 
   useEffect(() => {
     setSelectedIds((prev) => prev.filter((id) => rows.some((row) => getRowId(row) === id)));
@@ -77,6 +85,78 @@ export default function Crud({
     }
     onDeleteMany(selectedIds, () => setSelectedIds([]));
   };
+
+  const abrirConfirmacion = ({ mode, row, rowId }) => {
+    setConfirmState({
+      open: true,
+      mode,
+      row,
+      rowId,
+    });
+  };
+
+  const cerrarConfirmacion = () => {
+    if (confirmLoading) {
+      return;
+    }
+
+    setConfirmState({
+      open: false,
+      mode: null,
+      row: null,
+      rowId: null,
+    });
+  };
+
+  const confirmarAccion = async () => {
+    if (!confirmState.open) {
+      return;
+    }
+
+    setConfirmLoading(true);
+
+    try {
+      if (confirmState.mode === 'toggle') {
+        await onToggleActive?.(confirmState.row);
+      }
+
+      if (confirmState.mode === 'delete') {
+        await onDeleteOne?.(confirmState.rowId);
+      }
+
+      cerrarConfirmacion();
+    } finally {
+      setConfirmLoading(false);
+    }
+  };
+
+  const confirmTitle =
+    confirmState.mode === 'toggle'
+      ? confirmState.row?.activo
+        ? 'Desactivar registro'
+        : 'Activar registro'
+      : 'Eliminar registro';
+
+  const confirmMessage =
+    confirmState.mode === 'toggle'
+      ? confirmState.row?.activo
+        ? 'Deseas desactivar este registro?'
+        : 'Deseas activar este registro?'
+      : 'Esta accion eliminara el registro seleccionado. Deseas continuar?';
+
+  const confirmLabel =
+    confirmState.mode === 'toggle'
+      ? confirmState.row?.activo
+        ? 'Desactivar'
+        : 'Activar'
+      : 'Eliminar';
+
+  const confirmVariant =
+    confirmState.mode === 'toggle'
+      ? confirmState.row?.activo
+        ? 'danger'
+        : 'success'
+      : 'danger';
 
   const handleEdit = async () => {
     setLoadingActualizar(true);
@@ -180,15 +260,15 @@ export default function Crud({
                         <div className="flex justify-end gap-1">
                           <button
                             type="button"
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-700 transition hover:bg-slate-200"
+                            className={`inline-flex h-8 w-8 items-center justify-center rounded-lg transition ${row.activo ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'}`}
                             title={row.activo ? 'Desactivar' : 'Activar'}
-                            onClick={() => onToggleActive?.(row)}
+                            onClick={() => abrirConfirmacion({ mode: 'toggle', row, rowId })}
                           >
                             <Icon icon={row.activo ? 'mdi:toggle-switch' : 'mdi:toggle-switch-off-outline'} width="18" />
                           </button>
                           <button
                             type="button"
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-violet-100 text-violet-700 transition hover:bg-violet-200"
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-yellow-100 text-yellow-700 transition hover:bg-yellow-200"
                             title="Editar"
                             onClick={() => onEdit?.(rowId)}
                           >
@@ -196,9 +276,9 @@ export default function Crud({
                           </button>
                           <button
                             type="button"
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-rose-100 text-rose-700 transition hover:bg-rose-200"
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-violet-100 text-violet-700 transition hover:bg-violet-200"
                             title="Eliminar"
-                            onClick={() => onDeleteOne?.(rowId)}
+                            onClick={() => abrirConfirmacion({ mode: 'delete', row, rowId })}
                           >
                             <Icon icon="mdi:trash-can-outline" width="16" />
                           </button>
@@ -237,7 +317,7 @@ export default function Crud({
                       type="button"
                       className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-700 transition hover:bg-slate-200"
                       title={row.activo ? 'Desactivar' : 'Activar'}
-                      onClick={() => onToggleActive?.(row)}
+                      onClick={() => abrirConfirmacion({ mode: 'toggle', row, rowId })}
                     >
                       <Icon icon={row.activo ? 'mdi:toggle-switch' : 'mdi:toggle-switch-off-outline'} width="18" />
                     </button>
@@ -253,7 +333,7 @@ export default function Crud({
                       type="button"
                       className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-rose-100 text-rose-700 transition hover:bg-rose-200"
                       title="Eliminar"
-                      onClick={() => onDeleteOne?.(rowId)}
+                      onClick={() => abrirConfirmacion({ mode: 'delete', row, rowId })}
                     >
                       <Icon icon="mdi:trash-can-outline" width="16" />
                     </button>
@@ -338,6 +418,16 @@ export default function Crud({
       </article>
 
       <LoadingOverlay show={loadingActualizar} message="Actualizando informacion..." />
+      <ConfirmDialog
+        open={confirmState.open}
+        title={confirmTitle}
+        message={confirmMessage}
+        confirmLabel={confirmLabel}
+        confirmVariant={confirmVariant}
+        loading={confirmLoading}
+        onConfirm={confirmarAccion}
+        onCancel={cerrarConfirmacion}
+      />
     </>
   );
 }

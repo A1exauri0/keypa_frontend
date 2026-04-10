@@ -14,6 +14,7 @@ export default function Button({
   const variants = {
     primary: 'bg-fuchsia-600 text-white hover:bg-fuchsia-700 focus-visible:ring-fuchsia-500',
     secondary: 'bg-violet-100 text-violet-800 hover:bg-violet-200 focus-visible:ring-violet-400',
+    success: 'bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:ring-emerald-500',
     ghost: 'bg-transparent text-violet-700 hover:bg-violet-50 focus-visible:ring-violet-400',
     danger: 'bg-rose-600 text-white hover:bg-rose-700 focus-visible:ring-rose-500',
   };
