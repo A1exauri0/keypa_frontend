@@ -3,7 +3,9 @@ import ProtectedRoute from '../../modules/usuarios/components/ProtectedRoute';
 import LoginPage from '../../modules/auth/pages/login';
 import LayoutAdmin from '../layouts/LayoutAdmin';
 import DashboardPage from '../../modules/dashboard/pages/dashboard';
-import ProductosPage from '../../modules/dashboard/pages/productos';
+import ProductosPage from '../../modules/productos/pages/productos';
+import MarcasPage from '../../modules/productos/pages/marcas';
+import CategoriasPage from '../../modules/productos/pages/categorias';
 
 export const router = createBrowserRouter([
   {
@@ -29,6 +31,14 @@ export const router = createBrowserRouter([
       {
         path: 'productos',
         element: <ProductosPage />,
+      },
+      {
+        path: 'marcas',
+        element: <MarcasPage />,
+      },
+      {
+        path: 'categorias',
+        element: <CategoriasPage />,
       },
     ],
   },
