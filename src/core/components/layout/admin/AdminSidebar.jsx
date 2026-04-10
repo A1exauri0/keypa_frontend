@@ -8,6 +8,8 @@ const catalogoItems = [
   { to: '/admin/categorias', label: 'Categorias', icon: 'mdi:shape-outline' },
 ];
 
+const clientesItem = { to: '/admin/clientes', label: 'Clientes', icon: 'mdi:account-multiple-outline' };
+
 const ubicacionItems = [
   { to: '/admin/ciudades', label: 'Ciudades', icon: 'mdi:city-variant-outline' },
   { to: '/admin/colonias', label: 'Colonias', icon: 'mdi:map-marker-radius-outline' },
@@ -108,6 +110,24 @@ export default function AdminSidebar({ expanded, mobileOpen, onCloseMobile, onNa
               >
                 <Icon icon="mdi:view-dashboard-outline" width="20" />
                 {expanded ? <span>Dashboard</span> : null}
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink
+                to={clientesItem.to}
+                onClick={handleItemClick}
+                title={expanded ? undefined : clientesItem.label}
+                className={({ isActive }) =>
+                  `flex items-center rounded-xl text-sm font-medium transition ${
+                    expanded ? 'h-11 gap-3 px-3' : 'mx-auto h-11 w-11 justify-center px-0'
+                  } ${
+                    isActive ? 'bg-white/20 text-white' : 'text-white/80 hover:bg-white/10 hover:text-white'
+                  }`
+                }
+              >
+                <Icon icon={clientesItem.icon} width="20" />
+                {expanded ? <span>{clientesItem.label}</span> : null}
               </NavLink>
             </li>
 

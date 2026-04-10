@@ -10,6 +10,7 @@ import MarcasPage from '../../modules/productos/pages/marcas';
 import CategoriasPage from '../../modules/productos/pages/categorias';
 import CiudadesPage from '../../modules/ubicaciones/pages/ciudades';
 import ColoniasPage from '../../modules/ubicaciones/pages/colonias';
+import ClientesPage from '../../modules/clientes/pages/clientes';
 
 export const router = createBrowserRouter([
   {
@@ -59,6 +60,10 @@ export const router = createBrowserRouter([
       {
         path: 'colonias',
         element: <ColoniasPage />,
+      },
+      {
+        path: 'clientes',
+        element: <ClientesPage />,
       },
     ],
   },

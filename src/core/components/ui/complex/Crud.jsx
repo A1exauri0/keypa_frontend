@@ -140,9 +140,9 @@ export default function Crud({
   const confirmMessage =
     confirmState.mode === 'toggle'
       ? confirmState.row?.activo
-        ? 'Deseas desactivar este registro?'
-        : 'Deseas activar este registro?'
-      : 'Esta accion eliminara el registro seleccionado. Deseas continuar?';
+        ? '¿Deseas desactivar este registro?'
+        : '¿Deseas activar este registro?'
+      : '¿Estás seguro de que deseas eliminar el registro seleccionado?';
 
   const confirmLabel =
     confirmState.mode === 'toggle'
