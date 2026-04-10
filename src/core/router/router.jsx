@@ -11,6 +11,8 @@ import CategoriasPage from '../../modules/productos/pages/categorias';
 import CiudadesPage from '../../modules/ubicaciones/pages/ciudades';
 import ColoniasPage from '../../modules/ubicaciones/pages/colonias';
 import ClientesPage from '../../modules/clientes/pages/clientes';
+import SucursalesPage from '../../modules/sucursales/pages/sucursales';
+import AlmacenesPage from '../../modules/almacenes/pages/almacenes';
 
 export const router = createBrowserRouter([
   {
@@ -64,6 +66,14 @@ export const router = createBrowserRouter([
       {
         path: 'clientes',
         element: <ClientesPage />,
+      },
+      {
+        path: 'sucursales',
+        element: <SucursalesPage />,
+      },
+      {
+        path: 'almacenes',
+        element: <AlmacenesPage />,
       },
     ],
   },

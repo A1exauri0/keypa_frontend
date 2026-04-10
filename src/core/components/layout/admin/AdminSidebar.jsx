@@ -15,11 +15,17 @@ const ubicacionItems = [
   { to: '/admin/colonias', label: 'Colonias', icon: 'mdi:map-marker-radius-outline' },
 ];
 
+const infraestructuraItems = [
+  { to: '/admin/sucursales', label: 'Sucursales', icon: 'mdi:store-marker-outline' },
+  { to: '/admin/almacenes', label: 'Almacenes', icon: 'mdi:warehouse' },
+];
+
 export default function AdminSidebar({ expanded, mobileOpen, onCloseMobile, onNavigateStart, logoSrc }) {
   const location = useLocation();
   const [logoError, setLogoError] = useState(false);
   const [menuCatalogoAbierto, setMenuCatalogoAbierto] = useState(true);
   const [menuUbicacionesAbierto, setMenuUbicacionesAbierto] = useState(true);
+  const [menuInfraestructuraAbierto, setMenuInfraestructuraAbierto] = useState(true);
 
   const catalogoActivo = useMemo(
     () => catalogoItems.some((item) => location.pathname.startsWith(item.to)),
@@ -28,6 +34,11 @@ export default function AdminSidebar({ expanded, mobileOpen, onCloseMobile, onNa
 
   const ubicacionesActivo = useMemo(
     () => ubicacionItems.some((item) => location.pathname.startsWith(item.to)),
+    [location.pathname],
+  );
+
+  const infraestructuraActiva = useMemo(
+    () => infraestructuraItems.some((item) => location.pathname.startsWith(item.to)),
     [location.pathname],
   );
 
@@ -42,6 +53,12 @@ export default function AdminSidebar({ expanded, mobileOpen, onCloseMobile, onNa
       setMenuUbicacionesAbierto(true);
     }
   }, [ubicacionesActivo]);
+
+  useEffect(() => {
+    if (infraestructuraActiva) {
+      setMenuInfraestructuraAbierto(true);
+    }
+  }, [infraestructuraActiva]);
 
   const handleItemClick = () => {
     if (onNavigateStart) {
@@ -206,9 +223,46 @@ export default function AdminSidebar({ expanded, mobileOpen, onCloseMobile, onNa
                     ))}
                   </ul>
                 ) : null}
+
+                <button
+                  type="button"
+                  onClick={() => setMenuInfraestructuraAbierto((prev) => !prev)}
+                  className={`mt-2 flex h-11 w-full items-center justify-between rounded-xl px-3 text-sm font-medium transition ${
+                    infraestructuraActiva ? 'bg-white/20 text-white' : 'text-white/80 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <span className="flex items-center gap-3">
+                    <Icon icon="mdi:warehouse" width="20" />
+                    Sucursales y almacenes
+                  </span>
+                  <Icon icon={menuInfraestructuraAbierto ? 'mdi:chevron-up' : 'mdi:chevron-down'} width="18" />
+                </button>
+
+                {menuInfraestructuraAbierto ? (
+                  <ul className="mt-1 grid gap-1 pl-2">
+                    {infraestructuraItems.map((item) => (
+                      <li key={item.to}>
+                        <NavLink
+                          to={item.to}
+                          onClick={handleItemClick}
+                          className={({ isActive }) =>
+                            `flex h-10 items-center gap-2 rounded-lg px-3 text-sm transition ${
+                              isActive
+                                ? 'bg-white/20 text-white'
+                                : 'text-white/75 hover:bg-white/10 hover:text-white'
+                            }`
+                          }
+                        >
+                          <Icon icon={item.icon} width="18" />
+                          {item.label}
+                        </NavLink>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
               </li>
             ) : (
-              [...catalogoItems, ...ubicacionItems].map((item) => (
+              [...catalogoItems, ...ubicacionItems, ...infraestructuraItems].map((item) => (
                 <li key={item.to}>
                   <NavLink
                     to={item.to}
