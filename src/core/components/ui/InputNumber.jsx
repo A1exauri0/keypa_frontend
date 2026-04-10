@@ -39,7 +39,7 @@ export default function InputNumber({
     onChange(numericValue);
   };
 
-  const wrapperClass = `flex h-11 items-center rounded-xl border bg-white transition focus-within:ring-2 focus-within:ring-fuchsia-200 ${
+  const wrapperClass = `flex h-10 items-center rounded-xl border bg-white transition focus-within:ring-2 focus-within:ring-fuchsia-200 ${
     error ? 'border-rose-500 focus-within:border-rose-500' : 'border-slate-300 focus-within:border-fuchsia-500'
   }`;
 

@@ -31,7 +31,7 @@ export default function InputText({
 
   const wrapperClass = useMemo(() => {
     const base =
-      'flex h-11 items-center rounded-xl border bg-white transition focus-within:ring-2 focus-within:ring-fuchsia-200';
+      'flex h-10 items-center rounded-xl border bg-white transition focus-within:ring-2 focus-within:ring-fuchsia-200';
     const border = error ? 'border-rose-500 focus-within:border-rose-500' : 'border-slate-300 focus-within:border-fuchsia-500';
     return `${base} ${border}`;
   }, [error]);
@@ -69,7 +69,7 @@ export default function InputText({
         {type === 'password' ? (
           <button
             type="button"
-            className="grid h-9 w-9 place-items-center rounded-lg text-slate-500 transition hover:bg-fuchsia-50 hover:text-fuchsia-700"
+            className="grid h-8 w-8 place-items-center rounded-lg text-slate-500 transition hover:bg-fuchsia-50 hover:text-fuchsia-700"
             onClick={() => setShowPassword((prev) => !prev)}
             aria-label={showPassword ? 'Ocultar contrasena' : 'Mostrar contrasena'}
             title={showPassword ? 'Ocultar contrasena' : 'Mostrar contrasena'}
