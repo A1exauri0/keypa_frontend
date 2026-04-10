@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import InputNumber from '../../../core/components/ui/InputNumber';
-import Button from '../../../core/components/ui/Button';
+import InputNumber from '../../../core/components/ui/inputs/InputNumber';
+import Button from '../../../core/components/ui/buttons/Button';
 
 const metricas = [
   { titulo: 'Pedidos hoy', valor: '28', color: 'text-emerald-600' },

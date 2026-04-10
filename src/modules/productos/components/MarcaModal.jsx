@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import Modal from '../../../core/components/ui/Modal';
-import Button from '../../../core/components/ui/Button';
-import InputText from '../../../core/components/ui/InputText';
-import Select from '../../../core/components/ui/Select';
+import Modal from '../../../core/components/ui/overlays/Modal';
+import Button from '../../../core/components/ui/buttons/Button';
+import InputText from '../../../core/components/ui/inputs/InputText';
+import Select from '../../../core/components/ui/selectors/Select';
 import { slugifyText } from '../../../core/utils/slugify';
 
 const estadoInicial = {

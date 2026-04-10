@@ -1,6 +1,6 @@
 import { Icon } from '@iconify/react';
 import { useEffect, useRef, useState } from 'react';
-import InputText from './InputText';
+import InputText from '../inputs/InputText';
 
 export default function ImageUploader({
   id,

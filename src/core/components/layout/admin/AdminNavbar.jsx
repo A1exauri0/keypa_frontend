@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react";
-import Button from "../../ui/Button";
+import Button from "../../ui/buttons/Button";
 
 export default function AdminNavbar({
   usuario,

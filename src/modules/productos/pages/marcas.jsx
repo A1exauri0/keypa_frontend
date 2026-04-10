@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import Crud from '../../../core/components/ui/Crud';
-import { useToast } from '../../../core/components/ui/Toast';
+import Crud from '../../../core/components/ui/complex/Crud';
+import { useToast } from '../../../core/components/ui/feedback/Toast';
 import MarcaModal from '../components/MarcaModal';
 import {
   actualizarMarca,

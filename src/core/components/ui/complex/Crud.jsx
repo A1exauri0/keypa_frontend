@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Icon } from '@iconify/react';
-import Button from './Button';
-import InputText from './InputText';
-import Select from './Select';
-import Checkbox from './Checkbox';
-import LoadingOverlay from './LoadingOverlay';
+import Button from '../buttons/Button';
+import InputText from '../inputs/InputText';
+import Select from '../selectors/Select';
+import Checkbox from '../inputs/Checkbox';
+import LoadingOverlay from '../feedback/LoadingOverlay';
 
 export default function Crud({
   title,

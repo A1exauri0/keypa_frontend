@@ -3,8 +3,8 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import AdminSidebar from '../components/layout/admin/AdminSidebar';
 import AdminNavbar from '../components/layout/admin/AdminNavbar';
-import { useToast } from '../components/ui/Toast';
-import LoadingOverlay from '../components/ui/LoadingOverlay';
+import { useToast } from '../components/ui/feedback/Toast';
+import LoadingOverlay from '../components/ui/feedback/LoadingOverlay';
 
 export default function LayoutAdmin() {
   const appLogo = '/images/logos/logo.png';
