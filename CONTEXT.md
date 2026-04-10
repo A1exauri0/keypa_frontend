@@ -53,6 +53,18 @@ keypa_outlet/
 - Componentes, vistas, helpers y comentarios en espanol.
 - Mensajes de interfaz y errores en espanol.
 
+## Reglas de documentacion
+
+- Toda funcion asincrona en servicios que consume endpoints debe incluir un comentario breve explicando que endpoint usa y que retorna.
+- Cuando se creen modulos de dominio (por ejemplo categorias, marcas, productos), cada modulo debe tener su propio archivo de servicios para mantener separacion de responsabilidades.
+
+## Reglas funcionales de catalogo
+
+- El slug no se muestra al usuario en formularios; se genera automaticamente desde el nombre (por ejemplo: "Pantalon azul" -> "pantalon-azul").
+- Antes de crear o actualizar una entidad con slug, se debe validar que no exista ya en backend y mostrar mensaje claro de conflicto.
+- En vistas CRUD se debe mantener consistencia visual: mismo alto para buscadores, selects y botones de acciones.
+- La paginacion debe verse correctamente en movil: controles alineados, centrados y sin selector de tamano por pagina en pantallas pequenas.
+
 ## Docker
 
 El stack se levanta desde keypa_outlet.
