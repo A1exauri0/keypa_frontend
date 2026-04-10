@@ -8,13 +8,24 @@ const catalogoItems = [
   { to: '/admin/categorias', label: 'Categorias', icon: 'mdi:shape-outline' },
 ];
 
+const ubicacionItems = [
+  { to: '/admin/ciudades', label: 'Ciudades', icon: 'mdi:city-variant-outline' },
+  { to: '/admin/colonias', label: 'Colonias', icon: 'mdi:map-marker-radius-outline' },
+];
+
 export default function AdminSidebar({ expanded, mobileOpen, onCloseMobile, onNavigateStart, logoSrc }) {
   const location = useLocation();
   const [logoError, setLogoError] = useState(false);
   const [menuCatalogoAbierto, setMenuCatalogoAbierto] = useState(true);
+  const [menuUbicacionesAbierto, setMenuUbicacionesAbierto] = useState(true);
 
   const catalogoActivo = useMemo(
     () => catalogoItems.some((item) => location.pathname.startsWith(item.to)),
+    [location.pathname],
+  );
+
+  const ubicacionesActivo = useMemo(
+    () => ubicacionItems.some((item) => location.pathname.startsWith(item.to)),
     [location.pathname],
   );
 
@@ -23,6 +34,12 @@ export default function AdminSidebar({ expanded, mobileOpen, onCloseMobile, onNa
       setMenuCatalogoAbierto(true);
     }
   }, [catalogoActivo]);
+
+  useEffect(() => {
+    if (ubicacionesActivo) {
+      setMenuUbicacionesAbierto(true);
+    }
+  }, [ubicacionesActivo]);
 
   const handleItemClick = () => {
     if (onNavigateStart) {
@@ -132,9 +149,46 @@ export default function AdminSidebar({ expanded, mobileOpen, onCloseMobile, onNa
                     ))}
                   </ul>
                 ) : null}
+
+                <button
+                  type="button"
+                  onClick={() => setMenuUbicacionesAbierto((prev) => !prev)}
+                  className={`mt-2 flex h-11 w-full items-center justify-between rounded-xl px-3 text-sm font-medium transition ${
+                    ubicacionesActivo ? 'bg-white/20 text-white' : 'text-white/80 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <span className="flex items-center gap-3">
+                    <Icon icon="mdi:map-marker-multiple-outline" width="20" />
+                    Ubicaciones
+                  </span>
+                  <Icon icon={menuUbicacionesAbierto ? 'mdi:chevron-up' : 'mdi:chevron-down'} width="18" />
+                </button>
+
+                {menuUbicacionesAbierto ? (
+                  <ul className="mt-1 grid gap-1 pl-2">
+                    {ubicacionItems.map((item) => (
+                      <li key={item.to}>
+                        <NavLink
+                          to={item.to}
+                          onClick={handleItemClick}
+                          className={({ isActive }) =>
+                            `flex h-10 items-center gap-2 rounded-lg px-3 text-sm transition ${
+                              isActive
+                                ? 'bg-white/20 text-white'
+                                : 'text-white/75 hover:bg-white/10 hover:text-white'
+                            }`
+                          }
+                        >
+                          <Icon icon={item.icon} width="18" />
+                          {item.label}
+                        </NavLink>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
               </li>
             ) : (
-              catalogoItems.map((item) => (
+              [...catalogoItems, ...ubicacionItems].map((item) => (
                 <li key={item.to}>
                   <NavLink
                     to={item.to}

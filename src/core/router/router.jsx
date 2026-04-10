@@ -8,6 +8,8 @@ import DashboardPage from '../../modules/dashboard/pages/dashboard';
 import ProductosPage from '../../modules/productos/pages/productos';
 import MarcasPage from '../../modules/productos/pages/marcas';
 import CategoriasPage from '../../modules/productos/pages/categorias';
+import CiudadesPage from '../../modules/ubicaciones/pages/ciudades';
+import ColoniasPage from '../../modules/ubicaciones/pages/colonias';
 
 export const router = createBrowserRouter([
   {
@@ -49,6 +51,14 @@ export const router = createBrowserRouter([
       {
         path: 'categorias',
         element: <CategoriasPage />,
+      },
+      {
+        path: 'ciudades',
+        element: <CiudadesPage />,
+      },
+      {
+        path: 'colonias',
+        element: <ColoniasPage />,
       },
     ],
   },
