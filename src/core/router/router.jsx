@@ -1,6 +1,8 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom';
 import ProtectedRoute from '../../modules/usuarios/components/ProtectedRoute';
 import LoginPage from '../../modules/auth/pages/login';
+import ForgotPasswordPage from '../../modules/auth/pages/forgot-password';
+import ResetPasswordPage from '../../modules/auth/pages/reset-password';
 import LayoutAdmin from '../layouts/LayoutAdmin';
 import DashboardPage from '../../modules/dashboard/pages/dashboard';
 import ProductosPage from '../../modules/productos/pages/productos';
@@ -15,6 +17,14 @@ export const router = createBrowserRouter([
   {
     path: '/login',
     element: <LoginPage />,
+  },
+  {
+    path: '/forgot-password',
+    element: <ForgotPasswordPage />,
+  },
+  {
+    path: '/reset-password',
+    element: <ResetPasswordPage />,
   },
   {
     path: '/admin',

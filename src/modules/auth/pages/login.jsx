@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
+import LayoutAuth from "../../../core/layouts/LayoutAuth";
 import InputText from "../../../core/components/ui/inputs/InputText";
 import Button from "../../../core/components/ui/buttons/Button";
 import { useToast } from "../../../core/components/ui/feedback/Toast";
@@ -30,13 +31,13 @@ export default function LoginPage() {
 
       toast({
         title: `Bienvenida, ${usuario?.nombre || "Usuario"}`,
-        message: "Tu sesion ha iniciado correctamente.",
+        message: "Tu sesión ha iniciado correctamente.",
         variant: "success",
       });
       navigate("/admin/dashboard", { replace: true });
     } catch (apiError) {
       const message =
-        apiError.response?.data?.message || "No se pudo iniciar sesion";
+        apiError.response?.data?.message || "No se pudo iniciar sesin";
       setError(message);
       toast({
         title: "Error de acceso",
@@ -49,16 +50,10 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="min-h-screen grid place-items-center bg-gradient-to-br from-fuchsia-900 via-violet-900 to-purple-900 px-4">
-      <section className="w-full max-w-md rounded-2xl bg-white p-7 shadow-2xl shadow-slate-900/25">
-
-        <h1 className="mb-1 text-3xl font-bold text-slate-900">
-          Iniciar sesion
-        </h1>
-        <p className="mb-5 text-sm text-slate-500">
-          Ingresa con tu cuenta para entrar al panel.
-        </p>
-
+    <LayoutAuth
+      title="Iniciar sesión"
+      description="Ingresa con tu cuenta para entrar al panel."
+    >
         <form onSubmit={enviarFormulario}>
           <div className="mb-3">
             <InputText
@@ -91,9 +86,14 @@ export default function LoginPage() {
             Entrar
           </Button>
 
+          <p className="mt-3 text-sm text-slate-600">
+            <Link to="/forgot-password" className="font-semibold text-violet-700 hover:text-violet-800">
+              ¿Olvidaste tu contrasena?
+            </Link>
+          </p>
+
           {error ? <p className="mt-2 text-sm text-red-700">{error}</p> : null}
         </form>
-      </section>
-    </main>
+    </LayoutAuth>
   );
 }
