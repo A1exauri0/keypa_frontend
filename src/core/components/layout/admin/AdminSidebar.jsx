@@ -18,6 +18,7 @@ const ubicacionItems = [
 const infraestructuraItems = [
   { to: '/admin/sucursales', label: 'Sucursales', icon: 'mdi:store-marker-outline' },
   { to: '/admin/almacenes', label: 'Almacenes', icon: 'mdi:warehouse' },
+  { to: '/admin/inventarios', label: 'Inventarios', icon: 'mdi:clipboard-list-outline' },
 ];
 
 export default function AdminSidebar({ expanded, mobileOpen, onCloseMobile, onNavigateStart, logoSrc }) {

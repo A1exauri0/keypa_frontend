@@ -13,6 +13,7 @@ import ColoniasPage from '../../modules/ubicaciones/pages/colonias';
 import ClientesPage from '../../modules/clientes/pages/clientes';
 import SucursalesPage from '../../modules/sucursales/pages/sucursales';
 import AlmacenesPage from '../../modules/almacenes/pages/almacenes';
+import InventariosPage from '../../modules/inventarios/pages/inventarios';
 
 export const router = createBrowserRouter([
   {
@@ -74,6 +75,10 @@ export const router = createBrowserRouter([
       {
         path: 'almacenes',
         element: <AlmacenesPage />,
+      },
+      {
+        path: 'inventarios',
+        element: <InventariosPage />,
       },
     ],
   },

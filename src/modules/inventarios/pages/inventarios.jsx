@@ -1,0 +1,338 @@
+import { Icon } from "@iconify/react";
+import { useEffect, useMemo, useState } from "react";
+import Button from "../../../core/components/ui/buttons/Button";
+import InputText from "../../../core/components/ui/inputs/InputText";
+import Select from "../../../core/components/ui/selectors/Select";
+import { useToast } from "../../../core/components/ui/feedback/Toast";
+import InventarioModal from "../components/InventarioModal";
+import {
+  actualizarInventario,
+  crearInventario,
+  listarInventarios,
+} from "../services/inventariosService";
+import { listarAlmacenes } from "../../almacenes/services/almacenesService";
+import { listarProductos } from "../../productos/services/productosService";
+
+export default function InventariosPage() {
+  const { toast } = useToast();
+  const [inventarios, setInventarios] = useState([]);
+  const [almacenes, setAlmacenes] = useState([]);
+  const [productos, setProductos] = useState([]);
+  const [search, setSearch] = useState("");
+  const [filtroAlmacen, setFiltroAlmacen] = useState("todos");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalModo, setModalModo] = useState("crear");
+  const [inventarioSeleccionado, setInventarioSeleccionado] = useState(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const cargar = async () => {
+    setLoading(true);
+    try {
+      const [inventariosData, almacenesData, productosData] = await Promise.all(
+        [listarInventarios(), listarAlmacenes(), listarProductos()],
+      );
+
+      setInventarios(inventariosData);
+      setAlmacenes(almacenesData);
+      setProductos(productosData);
+    } catch (error) {
+      toast({
+        title: "No se pudo cargar inventarios",
+        message: error.response?.data?.message,
+        variant: "danger",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    cargar();
+  }, []);
+
+  const inventariosFiltrados = useMemo(() => {
+    const q = search.trim().toLowerCase();
+
+    return inventarios.filter((item) => {
+      const matchBusqueda =
+        !q ||
+        (item.producto?.nombre || "").toLowerCase().includes(q) ||
+        (item.producto?.sku || "").toLowerCase().includes(q) ||
+        (item.almacen?.nombre || "").toLowerCase().includes(q) ||
+        (item.almacen?.sucursal?.nombre || "").toLowerCase().includes(q);
+
+      const matchAlmacen =
+        filtroAlmacen === "todos" ||
+        String(item.idAlmacen) === String(filtroAlmacen);
+
+      return matchBusqueda && matchAlmacen;
+    });
+  }, [inventarios, search, filtroAlmacen]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, filtroAlmacen]);
+
+  const opcionesAlmacen = useMemo(
+    () => [
+      { value: "todos", label: "Todos los almacenes" },
+      ...almacenes.map((item) => ({
+        value: String(item.idAlmacen),
+        label: item.nombre,
+      })),
+    ],
+    [almacenes],
+  );
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(inventariosFiltrados.length / pageSize),
+  );
+  const pageSafe = Math.min(page, totalPages);
+
+  const inventariosPaginados = useMemo(() => {
+    const start = (pageSafe - 1) * pageSize;
+    return inventariosFiltrados.slice(start, start + pageSize);
+  }, [inventariosFiltrados, pageSafe, pageSize]);
+
+  const abrirCrear = () => {
+    setModalModo("crear");
+    setInventarioSeleccionado(null);
+    setModalOpen(true);
+  };
+
+  const abrirAjuste = (idInventario) => {
+    const inventario = inventarios.find(
+      (item) => item.idInventario === idInventario,
+    );
+    if (!inventario) {
+      return;
+    }
+
+    setModalModo("ajustar");
+    setInventarioSeleccionado(inventario);
+    setModalOpen(true);
+  };
+
+  const guardar = async (payload) => {
+    setSaving(true);
+    try {
+      await crearInventario(payload);
+      toast({ title: "Inventario agregado", variant: "success" });
+
+      setModalOpen(false);
+      await cargar();
+    } catch (error) {
+      toast({
+        title: "No se pudo guardar",
+        message:
+          error.response?.data?.message || "Verifica los datos del inventario.",
+        variant: "danger",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const guardarAjuste = async (payload) => {
+    if (!inventarioSeleccionado) {
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await actualizarInventario(inventarioSeleccionado.idInventario, payload);
+      toast({ title: "Stock ajustado", variant: "success" });
+      setModalOpen(false);
+      setInventarioSeleccionado(null);
+      await cargar();
+    } catch (error) {
+      toast({
+        title: "No se pudo ajustar stock",
+        message:
+          error.response?.data?.message || "Verifica los valores de stock.",
+        variant: "danger",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <section className="grid gap-4">
+      <article className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200 md:p-5">
+        <header className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-slate-900 md:text-xl">
+              Inventarios
+            </h3>
+            <p className="text-sm text-slate-600">
+              Control de stock por almacén y producto.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" variant="secondary" onClick={cargar}>
+              <Icon icon="tabler:reload" width="16" />
+              Recargar
+            </Button>
+            <Button type="button" onClick={abrirCrear}>
+              <Icon icon="mdi:plus" width="16" />
+              Registrar inventario
+            </Button>
+          </div>
+        </header>
+
+        <div className="mb-4 grid gap-3 md:grid-cols-2">
+          <InputText
+            id="inventarioSearch"
+            label="Buscar"
+            value={search}
+            onChange={setSearch}
+            placeholder="Producto, SKU, almacén o sucursal"
+          />
+
+          <Select
+            id="inventarioAlmacenFiltro"
+            label="Almacén"
+            value={filtroAlmacen}
+            onChange={setFiltroAlmacen}
+            options={opcionesAlmacen}
+          />
+        </div>
+
+        {loading ? (
+          <p className="text-sm text-slate-500">Cargando inventarios...</p>
+        ) : null}
+
+        {!loading ? (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[980px] text-sm">
+              <thead>
+                <tr className="border-b border-slate-200 text-left text-slate-500">
+                  <th className="py-2 pr-3">Producto</th>
+                  <th className="py-2 pr-3">SKU</th>
+                  <th className="py-2 pr-3">Sucursal</th>
+                  <th className="py-2 pr-3">Almacen</th>
+                  <th className="py-2 pr-3">Stock actual</th>
+                  <th className="py-2 pr-3 text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {inventariosPaginados.map((item) => {
+                  return (
+                    <tr
+                      key={item.idInventario}
+                      className="border-b border-slate-100"
+                    >
+                      <td className="py-2 pr-3 text-slate-700">
+                        {item.producto?.nombre || "-"}
+                      </td>
+                      <td className="py-2 pr-3 text-slate-700">
+                        {item.producto?.sku || "-"}
+                      </td>
+                      <td className="py-2 pr-3 text-slate-700">
+                        {item.almacen?.sucursal?.nombre || "-"}
+                      </td>
+                      <td className="py-2 pr-3 text-slate-700">
+                        {item.almacen?.nombre || "-"}
+                      </td>
+                      <td className="py-2 pr-3 text-slate-700">
+                        {item.stockActual}
+                      </td>
+                      <td className="py-2 pr-3">
+                        <div className="flex justify-end gap-1">
+                          <button
+                            type="button"
+                            className="inline-flex items-center gap-1 rounded-lg bg-fuchsia-100 px-3 py-1.5 text-xs font-semibold text-fuchsia-700 transition hover:bg-fuchsia-200"
+                            title="Ajustar stock"
+                            onClick={() => abrirAjuste(item.idInventario)}
+                          >
+                            <Icon icon="mdi:tune-variant" width="14" />
+                            Ajustar
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+
+            {inventariosFiltrados.length < 1 ? (
+              <p className="py-6 text-center text-sm text-slate-500">
+                No hay inventarios que coincidan con el filtro.
+              </p>
+            ) : null}
+
+            {inventariosFiltrados.length > 0 ? (
+              <div className="mt-4 flex flex-col gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 md:flex-row md:items-center md:justify-between">
+                <p className="text-xs text-slate-500">
+                  {inventariosFiltrados.length} registros · Pagina {pageSafe} de{" "}
+                  {totalPages}
+                </p>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="min-w-[170px]">
+                    <Select
+                      id="inventariosPageSize"
+                      value={String(pageSize)}
+                      onChange={(value) => {
+                        setPageSize(Number(value));
+                        setPage(1);
+                      }}
+                      options={[
+                        { value: "10", label: "10 por pagina" },
+                        { value: "20", label: "20 por pagina" },
+                        { value: "50", label: "50 por pagina" },
+                      ]}
+                    />
+                  </div>
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                    disabled={pageSafe <= 1}
+                  >
+                    <Icon icon="mdi:chevron-left" width="16" />
+                    Anterior
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() =>
+                      setPage((prev) => Math.min(totalPages, prev + 1))
+                    }
+                    disabled={pageSafe >= totalPages}
+                  >
+                    Siguiente
+                    <Icon icon="mdi:chevron-right" width="16" />
+                  </Button>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+      </article>
+
+      <InventarioModal
+        open={modalOpen}
+        modo={modalModo}
+        inventario={inventarioSeleccionado}
+        almacenes={almacenes}
+        productos={productos}
+        loading={saving}
+        onClose={() => {
+          setModalOpen(false);
+          setInventarioSeleccionado(null);
+        }}
+        onSubmit={modalModo === "ajustar" ? guardarAjuste : guardar}
+      />
+    </section>
+  );
+}
