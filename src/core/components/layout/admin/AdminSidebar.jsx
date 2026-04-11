@@ -5,6 +5,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 const LINKS_INDIVIDUALES = [
   { to: '/admin/dashboard', label: 'Dashboard', icon: 'mdi:view-dashboard-outline' },
   { to: '/admin/clientes', label: 'Clientes', icon: 'mdi:account-multiple-outline' },
+  { to: '/admin/ventas', label: 'Ventas', icon: 'mdi:cash-register' },
 ];
 
 const MENUS_GRUPO = [
