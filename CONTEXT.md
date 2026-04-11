@@ -1,75 +1,130 @@
 # CONTEXT - Keypa Frontend
 
-## Vista rapida
+## Objetivo
 
-Cliente web para autenticacion, panel y gestion de catalogos/seguridad.
+Aplicacion web administrativa para autenticacion, panel y gestion operativa de:
+
+- productos, marcas y categorias
+- ubicaciones (ciudades y colonias)
+- clientes, sucursales y almacenes
+- inventarios y ventas
 
 ## Stack
 
-- React + Vite
+- React 19 + Vite
 - React Router
 - Axios
 - Tailwind CSS
+- Zustand (estado puntual)
+- JWT Decode
 
-## Mapa visual del proyecto
+## Estructura principal
 
 ```text
-keypa_outlet/
-└── keypa_frontend/
-		├── src/
-		│   ├── modules/
-		│   ├── context/
-		│   ├── router/
-		│   └── services/
-		├── public/
-		├── index.html
-		└── vite.config.js
+keypa_frontend/
+├── src/
+│   ├── App.jsx
+│   ├── main.jsx
+│   ├── context/
+│   │   └── AuthContext.jsx
+│   ├── core/
+│   │   ├── api/
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   ├── layouts/
+│   │   ├── router/
+│   │   └── utils/
+│   └── modules/
+│       ├── auth/
+│       ├── dashboard/
+│       ├── productos/
+│       ├── ubicaciones/
+│       ├── clientes/
+│       ├── sucursales/
+│       ├── almacenes/
+│       ├── inventarios/
+│       ├── ventas/
+│       └── usuarios/
+├── public/
+├── index.html
+└── vite.config.js
 ```
+
+## Arquitectura frontend
+
+- `src/core` contiene piezas transversales (UI base, layout admin, router, helpers y API).
+- `src/modules` separa dominio por funcionalidad.
+- Cada modulo usa componentes de vista + hooks de pagina + servicios de API.
+- Se usa un patron de hooks para reducir logica en paginas:
+	- data
+	- filtros
+	- acciones
+	- modales
+- Para CRUD repetitivos se usa `src/core/hooks/useCrudBase.js`.
+
+## Rutas de aplicacion
+
+- Publicas:
+	- `/login`
+	- `/forgot-password`
+	- `/reset-password`
+- Privadas bajo `/admin`:
+	- dashboard
+	- productos, marcas, categorias
+	- ciudades, colonias
+	- clientes, sucursales, almacenes
+	- inventarios
+	- ventas
+
+## Autenticacion y sesion
+
+- Provider global: `AuthProvider`.
+- Token almacenado en `localStorage` con llave `keypa_token`.
+- Cliente HTTP con interceptor Bearer en `src/core/api/http.js`.
+- Carga de sesion via endpoint `me` al iniciar app.
+- Si token expira o es invalido, se limpia sesion local.
 
 ## Integracion con backend
 
-- Base URL por variable VITE_API_URL.
-- Login por correo y contrasena.
-- Token JWT para sesión persistente.
-
-## Contrato de backend relevante
-
-- IDs semanticos por entidad:
+- URL base por `VITE_API_URL`.
+- Formato de IDs semanticos esperado desde backend:
 	- idUsuario
 	- idProducto
-	- idRol
-	- idPermiso
-- Endpoints de backend organizados por archivos router:
-	- auth.router.js
-	- usuarios.router.js
-	- roles.router.js
-	- permisos.router.js
-- Permisos efectivos del usuario:
-	- por rol
-	- mas permisos directos
+	- idCategoria
+	- idMarca
+	- idCiudad
+	- idColonia
+	- idCliente
+	- idSucursal
+	- idAlmacen
+	- idInventario
+	- idVenta
 
-## Convencion de idioma
+## Convenciones de codigo
 
-- Componentes, vistas, helpers y comentarios en espanol.
-- Mensajes de interfaz y errores en espanol.
+- Idioma del dominio, UI y mensajes: espanol.
+- Mensajes de error orientados a usuario final.
+- Servicios por modulo, sin mezclar endpoints de dominios distintos.
+- En archivos `.js` donde el parser no tenga JSX habilitado, usar `createElement` en renderizadores inline.
 
-## Reglas de documentacion
+## Reglas funcionales
 
-- Toda funcion asincrona en servicios que consume endpoints debe incluir un comentario breve explicando que endpoint usa y que retorna.
-- Cuando se creen modulos de dominio (por ejemplo categorias, marcas, productos), cada modulo debe tener su propio archivo de servicios para mantener separacion de responsabilidades.
+- Slug generado automaticamente desde nombre cuando aplique.
+- Validar conflictos de slug/entidad desde backend y reflejar mensaje claro en UI.
+- CRUD con filtros consistentes y recarga segura de datos.
+- Paginacion usable en movil (sin quiebres visuales).
 
-## Reglas funcionales de catalogo
+## Comandos locales
 
-- El slug no se muestra al usuario en formularios; se genera automaticamente desde el nombre (por ejemplo: "Pantalon azul" -> "pantalon-azul").
-- Antes de crear o actualizar una entidad con slug, se debe validar que no exista ya en backend y mostrar mensaje claro de conflicto.
-- En vistas CRUD se debe mantener consistencia visual: mismo alto para buscadores, selects y botones de acciones.
-- La paginacion debe verse correctamente en movil: controles alineados, centrados y sin selector de tamano por pagina en pantallas pequenas.
+- `npm run dev`
+- `npm run build`
+- `npm run preview`
+- `npm run lint`
 
 ## Docker
 
-El stack se levanta desde keypa_outlet.
+El stack se levanta desde carpeta raiz `keypa_outlet`.
 
-Comandos utiles:
-- npm run upd
-- npm run logs
-- npm run down
+- `npm run upd`
+- `npm run logs`
+- `npm run down`
