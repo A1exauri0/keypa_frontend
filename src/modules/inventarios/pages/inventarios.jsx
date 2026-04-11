@@ -209,21 +209,21 @@ export default function InventariosPage() {
         ) : null}
 
         {!loading ? (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[980px] text-sm">
-              <thead>
-                <tr className="border-b border-slate-200 text-left text-slate-500">
-                  <th className="py-2 pr-3">Producto</th>
-                  <th className="py-2 pr-3">SKU</th>
-                  <th className="py-2 pr-3">Sucursal</th>
-                  <th className="py-2 pr-3">Almacen</th>
-                  <th className="py-2 pr-3">Stock actual</th>
-                  <th className="py-2 pr-3 text-right">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {inventariosPaginados.map((item) => {
-                  return (
+          <>
+            <div className="hidden overflow-x-auto md:block">
+              <table className="w-full min-w-[980px] text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 text-left text-slate-500">
+                    <th className="py-2 pr-3">Producto</th>
+                    <th className="py-2 pr-3">SKU</th>
+                    <th className="py-2 pr-3">Sucursal</th>
+                    <th className="py-2 pr-3">Almacen</th>
+                    <th className="py-2 pr-3">Stock actual</th>
+                    <th className="py-2 pr-3 text-right">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {inventariosPaginados.map((item) => (
                     <tr
                       key={item.idInventario}
                       className="border-b border-slate-100"
@@ -257,10 +257,65 @@ export default function InventariosPage() {
                         </div>
                       </td>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="grid gap-3 md:hidden">
+              {inventariosPaginados.map((item) => (
+                <div
+                  key={item.idInventario}
+                  className="rounded-xl border border-slate-200 p-3"
+                >
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      ID: {item.idInventario}
+                    </span>
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-1 rounded-lg bg-fuchsia-100 px-2.5 py-1 text-xs font-semibold text-fuchsia-700 transition hover:bg-fuchsia-200"
+                      title="Ajustar stock"
+                      onClick={() => abrirAjuste(item.idInventario)}
+                    >
+                      <Icon icon="mdi:tune-variant" width="14" />
+                      Ajustar
+                    </button>
+                  </div>
+
+                  <dl className="grid gap-1">
+                    <div className="grid grid-cols-[90px_1fr] gap-2 text-sm">
+                      <dt className="text-slate-500">Producto</dt>
+                      <dd className="text-slate-800">
+                        {item.producto?.nombre || "-"}
+                      </dd>
+                    </div>
+                    <div className="grid grid-cols-[90px_1fr] gap-2 text-sm">
+                      <dt className="text-slate-500">SKU</dt>
+                      <dd className="text-slate-800">
+                        {item.producto?.sku || "-"}
+                      </dd>
+                    </div>
+                    <div className="grid grid-cols-[90px_1fr] gap-2 text-sm">
+                      <dt className="text-slate-500">Sucursal</dt>
+                      <dd className="text-slate-800">
+                        {item.almacen?.sucursal?.nombre || "-"}
+                      </dd>
+                    </div>
+                    <div className="grid grid-cols-[90px_1fr] gap-2 text-sm">
+                      <dt className="text-slate-500">Almacen</dt>
+                      <dd className="text-slate-800">
+                        {item.almacen?.nombre || "-"}
+                      </dd>
+                    </div>
+                    <div className="grid grid-cols-[90px_1fr] gap-2 text-sm">
+                      <dt className="text-slate-500">Stock</dt>
+                      <dd className="text-slate-800">{item.stockActual}</dd>
+                    </div>
+                  </dl>
+                </div>
+              ))}
+            </div>
 
             {inventariosFiltrados.length < 1 ? (
               <p className="py-6 text-center text-sm text-slate-500">
@@ -269,14 +324,14 @@ export default function InventariosPage() {
             ) : null}
 
             {inventariosFiltrados.length > 0 ? (
-              <div className="mt-4 flex flex-col gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 md:flex-row md:items-center md:justify-between">
-                <p className="text-xs text-slate-500">
-                  {inventariosFiltrados.length} registros · Pagina {pageSafe} de{" "}
-                  {totalPages}
-                </p>
+              <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                  <p className="text-xs text-slate-500">
+                    {inventariosFiltrados.length} registros · Pagina {pageSafe}{" "}
+                    de {totalPages}
+                  </p>
 
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className="min-w-[170px]">
+                  <div className="hidden md:block md:min-w-[170px]">
                     <Select
                       id="inventariosPageSize"
                       value={String(pageSize)}
@@ -289,34 +344,73 @@ export default function InventariosPage() {
                         { value: "20", label: "20 por pagina" },
                         { value: "50", label: "50 por pagina" },
                       ]}
+                      containerClassName="md:min-w-[170px]"
                     />
                   </div>
 
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-                    disabled={pageSafe <= 1}
-                  >
-                    <Icon icon="mdi:chevron-left" width="16" />
-                    Anterior
-                  </Button>
+                  <div className="hidden md:flex md:items-center md:justify-end md:gap-2">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="justify-center"
+                      onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                      disabled={pageSafe <= 1}
+                    >
+                      <Icon icon="mdi:chevron-left" width="16" />
+                      <span>Anterior</span>
+                    </Button>
 
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() =>
-                      setPage((prev) => Math.min(totalPages, prev + 1))
-                    }
-                    disabled={pageSafe >= totalPages}
-                  >
-                    Siguiente
-                    <Icon icon="mdi:chevron-right" width="16" />
-                  </Button>
+                    <span className="inline-flex h-10 items-center justify-center rounded-xl bg-white px-3 text-sm font-semibold text-slate-700 ring-1 ring-slate-200">
+                      Pagina {pageSafe} de {totalPages}
+                    </span>
+
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="justify-center"
+                      onClick={() =>
+                        setPage((prev) => Math.min(totalPages, prev + 1))
+                      }
+                      disabled={pageSafe >= totalPages}
+                    >
+                      <span>Siguiente</span>
+                      <Icon icon="mdi:chevron-right" width="16" />
+                    </Button>
+                  </div>
+
+                  <div className="grid w-full grid-cols-3 items-center gap-2 md:hidden">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="w-full justify-center"
+                      onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                      disabled={pageSafe <= 1}
+                    >
+                      <Icon icon="mdi:chevron-left" width="16" />
+                      <span className="hidden sm:inline">Anterior</span>
+                    </Button>
+
+                    <span className="inline-flex h-10 w-full items-center justify-center rounded-xl bg-white px-3 text-sm font-semibold text-slate-700 ring-1 ring-slate-200">
+                      Pag {pageSafe}/{totalPages}
+                    </span>
+
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="w-full justify-center"
+                      onClick={() =>
+                        setPage((prev) => Math.min(totalPages, prev + 1))
+                      }
+                      disabled={pageSafe >= totalPages}
+                    >
+                      <span className="hidden sm:inline">Siguiente</span>
+                      <Icon icon="mdi:chevron-right" width="16" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             ) : null}
-          </div>
+          </>
         ) : null}
       </article>
 

@@ -57,7 +57,6 @@ export default function MarcasPage() {
 
   const columnas = [
     { key: 'nombre', label: 'Nombre' },
-    { key: 'slug', label: 'Slug' },
     {
       key: 'descripcion',
       label: 'Descripcion',
@@ -67,7 +66,7 @@ export default function MarcasPage() {
       key: 'activo',
       label: 'Estado',
       render: (row) => (
-        <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${row.activo ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}`}>
+        <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${row.activo ? 'bg-emerald-100 text-emerald-700' : 'bg-red-200 text-red-600'}`}>
           {row.activo ? 'Activo' : 'Inactivo'}
         </span>
       ),

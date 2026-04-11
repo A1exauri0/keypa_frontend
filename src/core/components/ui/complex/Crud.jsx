@@ -315,15 +315,14 @@ export default function Crud({
                   <div className="mt-3 flex justify-end gap-2">
                     <button
                       type="button"
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-700 transition hover:bg-slate-200"
-                      title={row.activo ? 'Desactivar' : 'Activar'}
+                      className={`rounded-lg px-2 py-0.5 text-xs font-semibold ${row.activo ? 'bg-emerald-100 text-emerald-700' : 'bg-red-200 text-red-600'}`}
                       onClick={() => abrirConfirmacion({ mode: 'toggle', row, rowId })}
                     >
                       <Icon icon={row.activo ? 'mdi:toggle-switch' : 'mdi:toggle-switch-off-outline'} width="18" />
                     </button>
                     <button
                       type="button"
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-violet-100 text-violet-700 transition hover:bg-violet-200"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-yellow-100 text-yellow-700 transition hover:bg-violet-200"
                       title="Editar"
                       onClick={() => onEdit?.(rowId)}
                     >
@@ -331,7 +330,7 @@ export default function Crud({
                     </button>
                     <button
                       type="button"
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-rose-100 text-rose-700 transition hover:bg-rose-200"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-violet-100 text-violet-700 transition hover:bg-rose-200"
                       title="Eliminar"
                       onClick={() => abrirConfirmacion({ mode: 'delete', row, rowId })}
                     >
