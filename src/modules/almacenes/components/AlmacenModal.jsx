@@ -58,7 +58,7 @@ export default function AlmacenModal({
     <Modal
       open={open}
       onClose={onClose}
-      title={modo === 'editar' ? 'Actualizar almacen' : 'Agregar almacen'}
+      title={modo === 'editar' ? 'Actualizar almacén' : 'Agregar almacén'}
       footer={
         <div className="flex justify-end gap-2">
           <Button type="button" variant="secondary" onClick={onClose}>

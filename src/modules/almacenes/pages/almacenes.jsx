@@ -66,7 +66,7 @@ export default function AlmacenesPage() {
   }, [almacenes, filtro, filtroActivo]);
 
   const columnas = [
-    { key: 'nombre', label: 'Almacen' },
+    { key: 'nombre', label: 'Almacén' },
     { key: 'sucursal', label: 'Sucursal', render: (row) => row.sucursal?.nombre || '-' },
     {
       key: 'estado',
@@ -105,10 +105,10 @@ export default function AlmacenesPage() {
     try {
       if (modoModal === 'editar' && almacenActual) {
         await actualizarAlmacen(almacenActual.idAlmacen, payload);
-        toast({ title: 'Almacen actualizado', variant: 'success' });
+        toast({ title: 'Almacén actualizado', variant: 'success' });
       } else {
         await crearAlmacen(payload);
-        toast({ title: 'Almacen creado', variant: 'success' });
+        toast({ title: 'Almacén creado', variant: 'success' });
       }
 
       setModalAbierto(false);
@@ -142,7 +142,7 @@ export default function AlmacenesPage() {
   const alternarActivo = async (almacen) => {
     try {
       await actualizarAlmacen(almacen.idAlmacen, { activo: !almacen.activo });
-      toast({ title: almacen.activo ? 'Almacen desactivado' : 'Almacen activado', variant: 'success' });
+      toast({ title: almacen.activo ? 'Almacén desactivado' : 'Almacén activado', variant: 'success' });
       await cargar();
     } catch (error) {
       toast({
@@ -156,12 +156,12 @@ export default function AlmacenesPage() {
   const eliminarUno = async (idAlmacen) => {
     try {
       await eliminarAlmacenesMultiples([idAlmacen]);
-      toast({ title: 'Almacen eliminado', variant: 'warning' });
+      toast({ title: 'Almacén eliminado', variant: 'warning' });
       await cargar();
     } catch (error) {
       toast({
         title: 'No se pudo eliminar',
-        message: error.response?.data?.message || 'No fue posible eliminar el almacen.',
+        message: error.response?.data?.message || 'No fue posible eliminar el almacén.',
         variant: 'danger',
       });
     }
@@ -176,7 +176,7 @@ export default function AlmacenesPage() {
         columns={columnas}
         loading={cargando}
         getRowId={(row) => row.idAlmacen}
-        searchLabel="Buscar almacen"
+        searchLabel="Buscar almacén"
         searchPlaceholder="Nombre o sucursal"
         searchValue={filtro}
         onSearchChange={setFiltro}
@@ -188,7 +188,7 @@ export default function AlmacenesPage() {
           { value: 'activos', label: 'Activos' },
           { value: 'inactivos', label: 'Inactivos' },
         ]}
-        createLabel="Agregar almacen"
+        createLabel="Agregar almacén"
         onCreate={abrirCrear}
         onRefresh={cargar}
         onEdit={abrirEditarPorId}
