@@ -1,171 +1,30 @@
-import { useEffect, useMemo, useState } from 'react';
 import Crud from '../../../core/components/ui/complex/Crud';
-import { useToast } from '../../../core/components/ui/feedback/Toast';
 import AlmacenModal from '../components/AlmacenModal';
-import {
-  actualizarAlmacen,
-  crearAlmacen,
-  eliminarAlmacenesMultiples,
-  listarAlmacenes,
-} from '../services/almacenesService';
-import { listarSucursales } from '../../sucursales/services/sucursalesService';
+import useAlmacenesPage from '../hooks/useAlmacenesPage';
 
 export default function AlmacenesPage() {
-  const { toast } = useToast();
-  const [almacenes, setAlmacenes] = useState([]);
-  const [sucursales, setSucursales] = useState([]);
-  const [filtro, setFiltro] = useState('');
-  const [filtroActivo, setFiltroActivo] = useState('todos');
-  const [cargando, setCargando] = useState(true);
-  const [guardando, setGuardando] = useState(false);
-  const [modalAbierto, setModalAbierto] = useState(false);
-  const [modoModal, setModoModal] = useState('crear');
-  const [almacenActual, setAlmacenActual] = useState(null);
-
-  const cargar = async () => {
-    setCargando(true);
-    try {
-      const [almacenesData, sucursalesData] = await Promise.all([
-        listarAlmacenes(),
-        listarSucursales(),
-      ]);
-
-      setAlmacenes(almacenesData);
-      setSucursales(sucursalesData);
-    } catch (error) {
-      toast({
-        title: 'No se pudieron cargar almacenes',
-        message: error.response?.data?.message,
-        variant: 'danger',
-      });
-    } finally {
-      setCargando(false);
-    }
-  };
-
-  useEffect(() => {
-    cargar();
-  }, []);
-
-  const almacenesFiltrados = useMemo(() => {
-    const q = filtro.trim().toLowerCase();
-
-    return almacenes.filter((item) => {
-      const matchBusqueda =
-        !q ||
-        (item.nombre || '').toLowerCase().includes(q) ||
-        (item.sucursal?.nombre || '').toLowerCase().includes(q);
-
-      const matchActivo =
-        filtroActivo === 'todos' ||
-        (filtroActivo === 'activos' && item.activo) ||
-        (filtroActivo === 'inactivos' && !item.activo);
-
-      return matchBusqueda && matchActivo;
-    });
-  }, [almacenes, filtro, filtroActivo]);
-
-  const columnas = [
-    { key: 'nombre', label: 'Almacén' },
-    { key: 'sucursal', label: 'Sucursal', render: (row) => row.sucursal?.nombre || '-' },
-    {
-      key: 'estado',
-      label: 'Estado',
-      render: (row) => (
-        <span
-          className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            row.activo ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'
-          }`}
-        >
-          {row.activo ? 'Activo' : 'Inactivo'}
-        </span>
-      ),
-    },
-  ];
-
-  const abrirCrear = () => {
-    setModoModal('crear');
-    setAlmacenActual(null);
-    setModalAbierto(true);
-  };
-
-  const abrirEditarPorId = (idAlmacen) => {
-    const almacen = almacenes.find((item) => item.idAlmacen === idAlmacen);
-    if (!almacen) {
-      return;
-    }
-
-    setModoModal('editar');
-    setAlmacenActual(almacen);
-    setModalAbierto(true);
-  };
-
-  const onGuardar = async (payload) => {
-    setGuardando(true);
-    try {
-      if (modoModal === 'editar' && almacenActual) {
-        await actualizarAlmacen(almacenActual.idAlmacen, payload);
-        toast({ title: 'Almacén actualizado', variant: 'success' });
-      } else {
-        await crearAlmacen(payload);
-        toast({ title: 'Almacén creado', variant: 'success' });
-      }
-
-      setModalAbierto(false);
-      await cargar();
-    } catch (error) {
-      toast({
-        title: 'No se pudo guardar',
-        message: error.response?.data?.message || 'Verifica los datos enviados.',
-        variant: 'danger',
-      });
-    } finally {
-      setGuardando(false);
-    }
-  };
-
-  const eliminarSeleccionados = async (ids, onDone) => {
-    try {
-      await eliminarAlmacenesMultiples(ids);
-      toast({ title: 'Almacenes eliminados', variant: 'warning' });
-      onDone();
-      await cargar();
-    } catch (error) {
-      toast({
-        title: 'No se pudo eliminar',
-        message: error.response?.data?.message || 'No fue posible eliminar la seleccion actual.',
-        variant: 'danger',
-      });
-    }
-  };
-
-  const alternarActivo = async (almacen) => {
-    try {
-      await actualizarAlmacen(almacen.idAlmacen, { activo: !almacen.activo });
-      toast({ title: almacen.activo ? 'Almacén desactivado' : 'Almacén activado', variant: 'success' });
-      await cargar();
-    } catch (error) {
-      toast({
-        title: 'No se pudo cambiar estado',
-        message: error.response?.data?.message,
-        variant: 'danger',
-      });
-    }
-  };
-
-  const eliminarUno = async (idAlmacen) => {
-    try {
-      await eliminarAlmacenesMultiples([idAlmacen]);
-      toast({ title: 'Almacén eliminado', variant: 'warning' });
-      await cargar();
-    } catch (error) {
-      toast({
-        title: 'No se pudo eliminar',
-        message: error.response?.data?.message || 'No fue posible eliminar el almacén.',
-        variant: 'danger',
-      });
-    }
-  };
+  const {
+    almacenesFiltrados,
+    columnas,
+    sucursales,
+    filtro,
+    setFiltro,
+    filtroActivo,
+    setFiltroActivo,
+    cargando,
+    guardando,
+    modalAbierto,
+    modoModal,
+    almacenActual,
+    abrirCrear,
+    abrirEditarPorId,
+    onGuardar,
+    eliminarSeleccionados,
+    alternarActivo,
+    eliminarUno,
+    cargar,
+    cerrarModal,
+  } = useAlmacenesPage();
 
   return (
     <section className="grid gap-6">
@@ -203,7 +62,7 @@ export default function AlmacenesPage() {
         almacen={almacenActual}
         sucursales={sucursales.filter((item) => item.activo)}
         loading={guardando}
-        onClose={() => setModalAbierto(false)}
+        onClose={cerrarModal}
         onSubmit={onGuardar}
       />
     </section>

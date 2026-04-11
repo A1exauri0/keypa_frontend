@@ -1,5 +1,5 @@
 import { Icon } from '@iconify/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Button from '../../../core/components/ui/buttons/Button';
 import InputText from '../../../core/components/ui/inputs/InputText';
 import Select from '../../../core/components/ui/selectors/Select';
@@ -9,9 +9,10 @@ import { useAuth } from '../../../context/AuthContext';
 import VentaModal from '../components/VentaModal';
 import VentaDetalleModal from '../components/VentaDetalleModal';
 import VentaExitosaModal from '../components/VentaExitosaModal';
-import { actualizarEstadoVenta, crearVenta, listarVentas, obtenerVentaPorId } from '../services/ventasService';
-import { listarClientes } from '../../clientes/services/clientesService';
-import { listarAlmacenes } from '../../almacenes/services/almacenesService';
+import useVentasData from '../hooks/useVentasData';
+import useVentasFiltros from '../hooks/useVentasFiltros';
+import useVentasModals from '../hooks/useVentasModals';
+import useVentasActions from '../hooks/useVentasActions';
 
 function formatearMoneda(valor) {
   const numero = Number(valor || 0);
@@ -33,161 +34,23 @@ function etiquetaEstado(estado) {
 export default function VentasPage() {
   const { toast } = useToast();
   const { usuario } = useAuth();
-  const [ventas, setVentas] = useState([]);
-  const [clientes, setClientes] = useState([]);
-  const [almacenes, setAlmacenes] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [detalleOpen, setDetalleOpen] = useState(false);
-  const [ventaDetalle, setVentaDetalle] = useState(null);
-  const [ventaExitosaOpen, setVentaExitosaOpen] = useState(false);
-  const [ventaExitosa, setVentaExitosa] = useState(null);
-  const [confirmEstadoOpen, setConfirmEstadoOpen] = useState(false);
-  const [confirmEstadoVenta, setConfirmEstadoVenta] = useState(null);
-  const [confirmEstadoDestino, setConfirmEstadoDestino] = useState('');
-  const [search, setSearch] = useState('');
-  const [filtroEstado, setFiltroEstado] = useState('todos');
 
   const esAdmin = useMemo(() => {
     const roles = Array.isArray(usuario?.roles) ? usuario.roles : [];
     return roles.some((rol) => String(rol).toLowerCase() === 'admin');
   }, [usuario]);
 
-  const cargar = async () => {
-    setLoading(true);
-    try {
-      const [ventasData, clientesData, almacenesData] = await Promise.all([
-        listarVentas(),
-        listarClientes(),
-        listarAlmacenes(),
-      ]);
-
-      setVentas(ventasData);
-      setClientes(clientesData);
-      setAlmacenes(almacenesData);
-    } catch (error) {
-      toast({
-        title: 'No se pudo cargar ventas',
-        message: error.response?.data?.message,
-        variant: 'danger',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    cargar();
-  }, []);
-
-  const ventasFiltradas = useMemo(() => {
-    const q = search.trim().toLowerCase();
-
-    return ventas.filter((item) => {
-      const clienteNombre = `${item.cliente?.nombre || ''} ${item.cliente?.apellidos || ''}`.toLowerCase();
-      const coincideBusqueda =
-        !q ||
-        (item.folio || '').toLowerCase().includes(q) ||
-        clienteNombre.includes(q) ||
-        (item.almacen?.nombre || '').toLowerCase().includes(q);
-
-      const coincideEstado = filtroEstado === 'todos' || item.estado === filtroEstado;
-
-      return coincideBusqueda && coincideEstado;
-    });
-  }, [ventas, search, filtroEstado]);
-
-  const registrarVenta = async (payload) => {
-    setSaving(true);
-    try {
-      const venta = await crearVenta(payload);
-      let ventaFinal = venta;
-
-      if (venta?.estado === 'pendiente') {
-        ventaFinal = await actualizarEstadoVenta(venta.idVenta, 'pagado');
-      }
-
-      setVentaExitosa(ventaFinal);
-      setVentaExitosaOpen(true);
-
-      toast({ title: 'Venta registrada', variant: 'success' });
-      setModalOpen(false);
-      await cargar();
-    } catch (error) {
-      toast({
-        title: 'No se pudo registrar venta',
-        message: error.response?.data?.message || 'Verifica los datos enviados.',
-        variant: 'danger',
-      });
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const abrirDetalle = async (venta) => {
-    setSaving(true);
-    try {
-      const ventaCompleta = await obtenerVentaPorId(venta.idVenta);
-      setVentaDetalle(ventaCompleta);
-      setDetalleOpen(true);
-    } catch (error) {
-      toast({
-        title: 'No se pudo cargar el detalle',
-        message: error.response?.data?.message,
-        variant: 'danger',
-      });
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const solicitarCambioEstado = (venta, estadoDestino) => {
-    if (!esAdmin) {
-      toast({
-        title: 'Accion no permitida',
-        message: 'Solo un administrador puede pagar o cancelar ventas.',
-        variant: 'warning',
-      });
-      return;
-    }
-
-    setConfirmEstadoVenta(venta);
-    setConfirmEstadoDestino(estadoDestino);
-    setConfirmEstadoOpen(true);
-  };
-
-  const confirmarCambioEstado = async () => {
-    if (!confirmEstadoVenta?.idVenta || !confirmEstadoDestino) {
-      setConfirmEstadoOpen(false);
-      return;
-    }
-
-    await cambiarEstado(confirmEstadoVenta.idVenta, confirmEstadoDestino);
-    setConfirmEstadoOpen(false);
-    setConfirmEstadoVenta(null);
-    setConfirmEstadoDestino('');
-  };
-
-  const cambiarEstado = async (idVenta, estado) => {
-    setSaving(true);
-    try {
-      await actualizarEstadoVenta(idVenta, estado);
-      toast({
-        title: estado === 'pagado' ? 'Venta marcada como pagada' : 'Venta cancelada',
-        variant: estado === 'pagado' ? 'success' : 'warning',
-      });
-      await cargar();
-    } catch (error) {
-      toast({
-        title: 'No se pudo actualizar estado',
-        message: error.response?.data?.message,
-        variant: 'danger',
-      });
-    } finally {
-      setSaving(false);
-    }
-  };
+  const { ventas, clientes, almacenes, loading, cargar } = useVentasData({ toast });
+  const { search, setSearch, filtroEstado, setFiltroEstado, ventasFiltradas } = useVentasFiltros(ventas);
+  const modals = useVentasModals();
+  const { registrarVenta, abrirDetalle, solicitarCambioEstado, confirmarCambioEstado } = useVentasActions({
+    toast,
+    esAdmin,
+    cargar,
+    setSaving,
+    modals,
+  });
 
   return (
     <section className="grid gap-4">
@@ -203,7 +66,7 @@ export default function VentasPage() {
               <Icon icon="tabler:reload" width="16" />
               Recargar
             </Button>
-            <Button type="button" onClick={() => setModalOpen(true)}>
+            <Button type="button" onClick={modals.openRegistro}>
               <Icon icon="mdi:cash-register" width="16" />
               Registrar venta
             </Button>
@@ -380,49 +243,39 @@ export default function VentasPage() {
       </article>
 
       <VentaModal
-        open={modalOpen}
+        open={modals.modalOpen}
         loading={saving}
         clientes={clientes}
         almacenes={almacenes}
-        onClose={() => setModalOpen(false)}
+        onClose={modals.closeRegistro}
         onSubmit={registrarVenta}
       />
 
       <VentaDetalleModal
-        open={detalleOpen}
-        venta={ventaDetalle}
-        onClose={() => {
-          setDetalleOpen(false);
-          setVentaDetalle(null);
-        }}
+        open={modals.detalleOpen}
+        venta={modals.ventaDetalle}
+        onClose={modals.closeDetalle}
       />
 
       <VentaExitosaModal
-        open={ventaExitosaOpen}
-        venta={ventaExitosa}
-        onClose={() => {
-          setVentaExitosaOpen(false);
-          setVentaExitosa(null);
-        }}
+        open={modals.ventaExitosaOpen}
+        venta={modals.ventaExitosa}
+        onClose={modals.closeExitosa}
       />
 
       <ConfirmDialog
-        open={confirmEstadoOpen}
-        title={confirmEstadoDestino === 'pagado' ? 'Confirmar pago de venta' : 'Confirmar cancelacion de venta'}
-        message={`Folio: ${confirmEstadoVenta?.folio || '-'}\n${
-          confirmEstadoDestino === 'pagado'
+        open={modals.confirmEstadoOpen}
+        title={modals.confirmEstadoDestino === 'pagado' ? 'Confirmar pago de venta' : 'Confirmar cancelacion de venta'}
+        message={`Folio: ${modals.confirmEstadoVenta?.folio || '-'}\n${
+          modals.confirmEstadoDestino === 'pagado'
             ? 'Se marcara la venta como pagada.'
             : 'La venta se cancelara y se revertira el stock en inventario.'
         }`}
-        confirmLabel={confirmEstadoDestino === 'pagado' ? 'Pagar venta' : 'Cancelar venta'}
-        confirmVariant={confirmEstadoDestino === 'pagado' ? 'primary' : 'danger'}
+        confirmLabel={modals.confirmEstadoDestino === 'pagado' ? 'Pagar venta' : 'Cancelar venta'}
+        confirmVariant={modals.confirmEstadoDestino === 'pagado' ? 'primary' : 'danger'}
         loading={saving}
         onConfirm={confirmarCambioEstado}
-        onCancel={() => {
-          setConfirmEstadoOpen(false);
-          setConfirmEstadoVenta(null);
-          setConfirmEstadoDestino('');
-        }}
+        onCancel={modals.closeConfirmEstado}
       />
     </section>
   );

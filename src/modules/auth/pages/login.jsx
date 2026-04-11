@@ -37,7 +37,7 @@ export default function LoginPage() {
       navigate("/admin/dashboard", { replace: true });
     } catch (apiError) {
       const message =
-        apiError.response?.data?.message || "No se pudo iniciar sesin";
+        apiError.response?.data?.message || "No se pudo iniciar sesion";
       setError(message);
       toast({
         title: "Error de acceso",
