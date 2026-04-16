@@ -15,6 +15,8 @@ import SucursalesPage from '../../modules/sucursales/pages/sucursales';
 import AlmacenesPage from '../../modules/almacenes/pages/almacenes';
 import InventariosPage from '../../modules/inventarios/pages/inventarios';
 import VentasPage from '../../modules/ventas/pages/ventas';
+import ProveedoresPage from '../../modules/proveedores/pages/proveedores';
+import ComprasPage from '../../modules/compras/pages/compras';
 
 export const router = createBrowserRouter([
   {
@@ -84,6 +86,14 @@ export const router = createBrowserRouter([
       {
         path: 'ventas',
         element: <VentasPage />,
+      },
+      {
+        path: 'proveedores',
+        element: <ProveedoresPage />,
+      },
+      {
+        path: 'compras',
+        element: <ComprasPage />,
       },
     ],
   },

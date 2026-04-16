@@ -6,6 +6,7 @@ const LINKS_INDIVIDUALES = [
   { to: '/admin/dashboard', label: 'Dashboard', icon: 'mdi:view-dashboard-outline' },
   { to: '/admin/clientes', label: 'Clientes', icon: 'mdi:account-multiple-outline' },
   { to: '/admin/ventas', label: 'Ventas', icon: 'mdi:cash-register' },
+  { to: '/admin/compras', label: 'Compras', icon: 'mdi:cart-arrow-down' },
 ];
 
 const MENUS_GRUPO = [
@@ -43,6 +44,7 @@ const MENUS_GRUPO = [
     icon: 'mdi:clipboard-list-outline',
     items: [
       { to: '/admin/inventarios', label: 'Inventarios', icon: 'mdi:clipboard-list-outline' },
+      { to: '/admin/proveedores', label: 'Proveedores', icon: 'mdi:truck-delivery-outline' },
     ],
   },
 ];

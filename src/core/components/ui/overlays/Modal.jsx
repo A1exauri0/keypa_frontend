@@ -13,9 +13,9 @@ export default function Modal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-2 sm:p-4">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/45 p-2 sm:p-4">
       <div
-        className={`max-h-[95vh] w-full ${widthClass} overflow-hidden rounded-2xl bg-white shadow-2xl sm:max-h-[85vh]`}
+        className={`relative mx-auto my-4 w-full ${widthClass} overflow-visible rounded-2xl bg-white shadow-2xl`}
         role="dialog"
         aria-modal="true"
       >
@@ -30,9 +30,9 @@ export default function Modal({
           </button>
         </header>
 
-        <div className="max-h-[calc(95vh-140px)] overflow-y-auto p-4 sm:max-h-[calc(85vh-140px)] sm:p-5">{children}</div>
+        <div className="relative z-20 overflow-visible p-4 sm:p-5">{children}</div>
 
-        {footer ? <footer className="border-t border-slate-200 px-5 py-4">{footer}</footer> : null}
+        {footer ? <footer className="relative z-10 border-t border-slate-200 px-5 py-4">{footer}</footer> : null}
       </div>
     </div>
   );
